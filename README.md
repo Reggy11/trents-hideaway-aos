@@ -35,7 +35,7 @@ Then, every game night:
 2. Launch the game (the installer put `Launch Trents Hideaway.cmd` in
    `C:\AoSRevival` — it boots straight to the main menu).
 3. Use **Direct Connect** and enter Trent's address:
-   `<TAILSCALE_IP>:27015`
+   `100.83.221.105:27015`
 4. Pick a class and deploy.
 
 The server runs the original Match Lobby rules, all 28 maps, and fills empty
