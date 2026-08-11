@@ -10,9 +10,16 @@ $url = "https://github.com/Reggy11/trents-hideaway-aos/releases/download/v$versi
 $expected = 'a6f81797cb58b01dbefec92ee4466de6645f05e61a76d74c5647a875e8b327c0'
 $dest = 'C:\AoSRevival'
 
+function Start-Hideaway {
+  # Split local boot: the server-list URL points at an unreachable local
+  # address (no revival registry contact) and +s skips the Command Center.
+  $env:AOS_SERVER_LIST_URL = 'http://127.0.0.1:9/serverlist'
+  Start-Process -FilePath (Join-Path $dest 'aos.exe') -ArgumentList '+s' -WorkingDirectory $dest
+}
+
 if (Test-Path (Join-Path $dest 'aos.exe')) {
   Write-Host 'AoSRevival already installed - launching.' -ForegroundColor Green
-  Start-Process -FilePath (Join-Path $dest 'aos.exe') -WorkingDirectory $dest
+  Start-Hideaway
   return
 }
 
@@ -34,5 +41,13 @@ Write-Host 'Extracting...' -ForegroundColor Cyan
 Expand-Archive -Path $zipPath -DestinationPath $dest -Force
 Remove-Item $zipPath -Force -Confirm:$false
 
+# Leave a double-clickable launcher behind for future sessions.
+@"
+@echo off
+set AOS_SERVER_LIST_URL=http://127.0.0.1:9/serverlist
+start "" /D "$dest" "$dest\aos.exe" +s
+"@ | Set-Content -Path (Join-Path $dest 'Launch Trents Hideaway.cmd') -Encoding ascii
+
 Write-Host 'Launching Ace of Spades. Ask Trent for the server address!' -ForegroundColor Green
-Start-Process -FilePath (Join-Path $dest 'aos.exe') -WorkingDirectory $dest
+Write-Host "Next time, just run '$dest\Launch Trents Hideaway.cmd'." -ForegroundColor Cyan
+Start-Hideaway
