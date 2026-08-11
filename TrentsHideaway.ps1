@@ -10,7 +10,28 @@
 # Edit $ServerAddress below if the server ever moves.
 # ---------------------------------------------------------------------------
 
-$ServerAddress = '100.106.45.70:27015'   # Tailscale address of Trent's server
+# Where to connect.
+#
+# $RemoteAddress is what friends use: Trent's PC as it appears inside THEIR
+# tailnet. Note a Tailscale shared device does NOT keep its original address -
+# Trent's PC is 100.106.45.70 on his own tailnet but 100.69.5.85 inside the
+# tailnet he shared it into, so this is the shared-in address, not his own.
+$RemoteAddress = '100.69.5.85:27015'
+$LocalAddress  = '127.0.0.1:27015'
+
+# If this machine is itself running the server, connect over loopback instead.
+# That is what lets ONE launcher serve everyone: Trent's copy detects the
+# listening server and uses 127.0.0.1, everyone else falls through to the
+# remote address. It also means Trent can still play with Tailscale down, and
+# avoids routing his own traffic out over the tailnet just to reach himself.
+function Resolve-ServerAddress {
+    try {
+        if (Get-NetUDPEndpoint -LocalPort 27015 -ErrorAction SilentlyContinue) {
+            return $LocalAddress
+        }
+    } catch { }
+    return $RemoteAddress
+}
 
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Windows.Forms
@@ -160,7 +181,8 @@ $play.Add_Click({
     }
 
     $form.Hide()
-    Start-Process -FilePath $Exe -ArgumentList '+s','+connect',$ServerAddress -WorkingDirectory $Dir
+    $target = Resolve-ServerAddress
+    Start-Process -FilePath $Exe -ArgumentList '+s','+connect',$target -WorkingDirectory $Dir
     $form.Close()
 })
 
