@@ -10,7 +10,7 @@
 # Edit $ServerAddress below if the server ever moves.
 # ---------------------------------------------------------------------------
 
-$ServerAddress = '100.83.221.105:27015'   # Tailscale address of Trent's server
+$ServerAddress = '100.106.45.70:27015'   # Tailscale address of Trent's server
 
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Windows.Forms
