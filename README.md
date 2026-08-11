@@ -1,8 +1,7 @@
-# Trent's Hideaway — Ace of Spades: Battle Builder
+# Trent's Hideaway — Ace of Spades
 
-Play the original Jagex-era **Ace of Spades: Battle Builder** (2012) with us on
-a private server. No Steam needed — the community revival client runs
-standalone.
+Play **Ace of Spades: Battle Builder** with us on Trent's private server.
+No Steam needed — the client below runs standalone.
 
 ## Quick start (Windows)
 
@@ -12,11 +11,13 @@ Open PowerShell and run:
 irm https://raw.githubusercontent.com/Reggy11/trents-hideaway-aos/main/join.ps1 | iex
 ```
 
-That downloads the revival client from the official release, verifies its
-checksum, extracts it to `C:\AoSRevival`, and launches the game.
+That downloads the client from this repo's release, verifies its checksum,
+extracts it to `C:\AoSRevival`, and launches the game. Run it again any time —
+if the game is already installed it just launches.
 
-Prefer to do it by hand? Grab `AoSRevival-0.1.5-win32-full.zip` from the
-[official AoSRevival releases](https://github.com/KikoTs/aceofspades_revival/releases),
+Prefer to do it by hand? Download
+[`AoSRevival-0.1.5-win32-full.zip`](https://github.com/Reggy11/trents-hideaway-aos/releases/download/v0.1.5/AoSRevival-0.1.5-win32-full.zip)
+from this repo's [Releases](https://github.com/Reggy11/trents-hideaway-aos/releases),
 extract it anywhere, and run `aos.exe`.
 
 ## Joining the server
@@ -36,13 +37,8 @@ slots with bots so small groups still get full matches.
 - If your gaming mouse polls at 1000 Hz+, drop it to 500 Hz — the 2012 input
   loop can choke on modern polling rates.
 - Windows Settings → Mouse → turn OFF **Enhance pointer precision**.
-- It's alpha software: crashes happen, just relaunch. Reproducible bugs go to
-  the Ace Of Spades: Community Discord #issues channel.
+- It's alpha-era software: if it crashes, just relaunch and rejoin.
 
-## Credits
-
-The client and server are the open-source (MIT) work of
-[KikoTs and the BattleSpades contributors](https://github.com/KikoTs/BattleSpades)
-and the Ace Of Spades: Community revival. This repo just makes joining our
-server one step. Original game by Jagex (2012), sunset 2019 — long live the
-blocks.
+---
+*Built on the MIT-licensed BattleSpades / AoSRevival open-source projects;
+the license notice ships inside the download.*

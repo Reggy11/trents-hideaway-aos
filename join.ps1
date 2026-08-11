@@ -6,8 +6,7 @@ $ErrorActionPreference = 'Stop'
 
 $version = '0.1.5'
 $zipName = "AoSRevival-$version-win32-full.zip"
-$url = "https://github.com/KikoTs/aceofspades_revival/releases/download/$version/$zipName"
-# From the official AoSRevival-0.1.5-SHA256SUMS.txt
+$url = "https://github.com/Reggy11/trents-hideaway-aos/releases/download/v$version/$zipName"
 $expected = 'a6f81797cb58b01dbefec92ee4466de6645f05e61a76d74c5647a875e8b327c0'
 $dest = 'C:\AoSRevival'
 
