@@ -22,10 +22,21 @@ extract it anywhere, and run `aos.exe`.
 
 ## Joining the server
 
-1. Launch `aos.exe`.
-2. Use **Direct Connect / server browser** and enter the address Trent gave
-   you: `<SERVER_ADDRESS>:27015`
-3. Pick a class and deploy.
+We play over Tailscale — a free private network, so nobody has to open router
+ports or share home IPs. One-time setup:
+
+1. Install [Tailscale](https://tailscale.com/download/windows) (free) and sign
+   in with the invite link Trent sends you.
+2. That's it — Tailscale runs in the background from then on.
+
+Then, every game night:
+
+1. Make sure Tailscale is running (the tray icon says Connected).
+2. Launch the game (the installer put `Launch Trents Hideaway.cmd` in
+   `C:\AoSRevival` — it boots straight to the main menu).
+3. Use **Direct Connect** and enter Trent's address:
+   `<TAILSCALE_IP>:27015`
+4. Pick a class and deploy.
 
 The server runs the original Match Lobby rules, all 28 maps, and fills empty
 slots with bots so small groups still get full matches.
