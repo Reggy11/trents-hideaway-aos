@@ -4,10 +4,10 @@
 
 $ErrorActionPreference = 'Stop'
 
-$version = '0.1.5'
+$version = '0.1.6'
 $zipName = "AoSRevival-$version-win32-full.zip"
 $url = "https://github.com/Reggy11/trents-hideaway-aos/releases/download/v$version/$zipName"
-$expected = 'a6f81797cb58b01dbefec92ee4466de6645f05e61a76d74c5647a875e8b327c0'
+$expected = '9be34f6be387f0acf43dbdfcd95cf2b1baa20f4c24e497f82e44c118c228e068'
 $dest = 'C:\AoSRevival'
 
 function Start-Hideaway {
@@ -79,14 +79,31 @@ function New-HideawayShortcut {
   }
 }
 
-if (Test-Path (Join-Path $dest 'aos.exe')) {
-  Write-Host 'AoSRevival already installed - launching.' -ForegroundColor Green
-  # Also runs here so people who installed before these existed get them, and so
-  # re-running the one-liner is how you pick up a newer launcher.
-  Get-HideawayLauncher | Out-Null
+# Version marker. Without this the "already installed" check below would keep
+# people on whatever client they first installed, forever - so an existing 0.1.5
+# install would never pick up a newer client. The marker records which version
+# this folder actually holds, and a mismatch forces a fresh download.
+$stamp = Join-Path $dest '.hideaway-version'
+$installed = if (Test-Path $stamp) { (Get-Content $stamp -Raw).Trim() } else { '' }
+
+if ((Test-Path (Join-Path $dest 'aos.exe')) -and ($installed -eq $version)) {
+  Write-Host "Client $version already installed - launching." -ForegroundColor Green
+  # Runs here too, so re-running the one-liner is how you pick up a newer
+  # launcher without re-downloading the client.
+  $haveLauncher = Get-HideawayLauncher
   New-HideawayShortcut
-  Start-Hideaway
+  if ($haveLauncher) {
+    Start-Process powershell -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass',
+      '-WindowStyle','Hidden','-File',(Join-Path $dest 'TrentsHideaway.ps1')
+  } else {
+    Start-Hideaway
+  }
   return
+}
+
+if (Test-Path (Join-Path $dest 'aos.exe')) {
+  $was = if ($installed) { $installed } else { 'an older build' }
+  Write-Host "Updating client from $was to $version..." -ForegroundColor Cyan
 }
 
 New-Item -ItemType Directory -Force $dest | Out-Null
@@ -113,6 +130,8 @@ Remove-Item $zipPath -Force -Confirm:$false
 set AOS_SERVER_LIST_URL=http://127.0.0.1:9/serverlist
 start "" /D "$dest" "$dest\aos.exe" +s
 "@ | Set-Content -Path (Join-Path $dest 'Launch Trents Hideaway.cmd') -Encoding ascii
+
+Set-Content -Path $stamp -Value $version -Encoding ascii
 
 $haveLauncher = Get-HideawayLauncher
 New-HideawayShortcut

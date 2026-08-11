@@ -16,7 +16,7 @@ extracts it to `C:\AoSRevival`, and launches the game. Run it again any time —
 if the game is already installed it just launches.
 
 Prefer to do it by hand? Download
-[`AoSRevival-0.1.5-win32-full.zip`](https://github.com/Reggy11/trents-hideaway-aos/releases/download/v0.1.5/AoSRevival-0.1.5-win32-full.zip)
+[`AoSRevival-0.1.6-win32-full.zip`](https://github.com/Reggy11/trents-hideaway-aos/releases/download/v0.1.6/AoSRevival-0.1.6-win32-full.zip)
 from this repo's [Releases](https://github.com/Reggy11/trents-hideaway-aos/releases),
 extract it anywhere, and run `aos.exe`.
 
