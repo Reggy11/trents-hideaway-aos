@@ -32,11 +32,15 @@ ports or share home IPs. One-time setup:
 Then, every game night:
 
 1. Make sure Tailscale is running (the tray icon says Connected).
-2. Launch the game from the **Trents Hideaway** shortcut the installer puts on
-   your Desktop — it boots straight to the main menu.
-3. Use **Direct Connect** and enter Trent's address:
-   `100.83.221.105:27015`
+2. Open the **Trents Hideaway** shortcut on your Desktop.
+3. Type the name you want to play as, then hit **PLAY**.
 4. Pick a class and deploy.
+
+That's it — no address to type, no server list. The launcher connects you
+straight to the server.
+
+**Set your name the first time.** If you skip it you'll show up in game as
+`Player`, because that's the name the client ships with.
 
 ### Pin it to your taskbar
 

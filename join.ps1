@@ -17,18 +17,39 @@ function Start-Hideaway {
   Start-Process -FilePath (Join-Path $dest 'aos.exe') -ArgumentList '+s' -WorkingDirectory $dest
 }
 
-function New-HideawayShortcut {
-  # Creates a .lnk that launches the game directly.
+function Get-HideawayLauncher {
+  # Fetches our own launcher - the one with the name box and settings that
+  # replaces the stock Revival Command Center.
   #
-  # The +s argument is what skips the Command Center. Pinning aos.exe itself to
-  # the taskbar drops that argument, which is why pinning the raw exe lands you
-  # on the starter window instead of in the game. A .lnk carries its arguments
-  # through pinning, so pin THIS, not the exe.
+  # It is downloaded rather than shipped inside the 353 MB release on purpose:
+  # updating the launcher is then a push to this repo, and nobody re-downloads
+  # the client. Returns $true if the launcher is present afterwards.
+  $target = Join-Path $dest 'TrentsHideaway.ps1'
+  $src = 'https://raw.githubusercontent.com/Reggy11/trents-hideaway-aos/main/TrentsHideaway.ps1'
+  try {
+    curl.exe -L -s --fail -o $target $src
+    if ((Test-Path $target) -and ((Get-Item $target).Length -gt 500)) { return $true }
+  } catch { }
+  Write-Host 'Could not fetch the launcher - the shortcut will start the game directly.' -ForegroundColor Yellow
+  return $false
+}
+
+function New-HideawayShortcut {
+  # Creates a .lnk pointing at our launcher (or, if that could not be fetched,
+  # straight at the game with +s).
+  #
+  # +s is what skips the stock Command Center. Pinning aos.exe itself to the
+  # taskbar drops that argument, which is why pinning the raw exe lands you on
+  # the starter window. A .lnk carries its arguments through pinning, so pin
+  # THIS, not the exe.
   #
   # Windows has blocked scripted taskbar pinning since Windows 10, so the pin
   # itself has to be done by hand - right-click the shortcut > Pin to taskbar.
   $exe = Join-Path $dest 'aos.exe'
   if (-not (Test-Path $exe)) { return }
+
+  $launcher = Join-Path $dest 'TrentsHideaway.ps1'
+  $useLauncher = Test-Path $launcher
 
   $paths = @(Join-Path $dest 'Trents Hideaway.lnk')
   $desktop = [Environment]::GetFolderPath('Desktop')
@@ -39,8 +60,14 @@ function New-HideawayShortcut {
   foreach ($p in $paths) {
     try {
       $sc = $shell.CreateShortcut($p)
-      $sc.TargetPath       = $exe
-      $sc.Arguments        = '+s'
+      if ($useLauncher) {
+        $sc.TargetPath = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
+        $sc.Arguments  = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$launcher`""
+        $sc.WindowStyle = 7        # minimised, so no console flashes past
+      } else {
+        $sc.TargetPath = $exe
+        $sc.Arguments  = '+s'
+      }
       $sc.WorkingDirectory = $dest
       $sc.Description      = "Trent's Hideaway - Ace of Spades"
       if (Test-Path $icon) { $sc.IconLocation = "$icon,0" }
@@ -54,7 +81,9 @@ function New-HideawayShortcut {
 
 if (Test-Path (Join-Path $dest 'aos.exe')) {
   Write-Host 'AoSRevival already installed - launching.' -ForegroundColor Green
-  # Also runs here so people who installed before shortcuts existed get one.
+  # Also runs here so people who installed before these existed get them, and so
+  # re-running the one-liner is how you pick up a newer launcher.
+  Get-HideawayLauncher | Out-Null
   New-HideawayShortcut
   Start-Hideaway
   return
@@ -85,12 +114,23 @@ set AOS_SERVER_LIST_URL=http://127.0.0.1:9/serverlist
 start "" /D "$dest" "$dest\aos.exe" +s
 "@ | Set-Content -Path (Join-Path $dest 'Launch Trents Hideaway.cmd') -Encoding ascii
 
+$haveLauncher = Get-HideawayLauncher
 New-HideawayShortcut
 
-Write-Host 'Launching Ace of Spades. Ask Trent for the server address!' -ForegroundColor Green
+Write-Host 'Installed.' -ForegroundColor Green
 Write-Host ''
-Write-Host 'TIP: a "Trents Hideaway" shortcut is now on your Desktop.' -ForegroundColor Cyan
-Write-Host '     Right-click it > Pin to taskbar, and it will boot straight' -ForegroundColor Cyan
-Write-Host '     into the game. Do NOT pin aos.exe directly - that skips the' -ForegroundColor Cyan
-Write-Host '     shortcut and drops you on the starter window instead.' -ForegroundColor Cyan
-Start-Hideaway
+Write-Host 'A "Trents Hideaway" shortcut is now on your Desktop.' -ForegroundColor Cyan
+Write-Host 'Right-click it > Pin to taskbar. Set your name in it, hit PLAY,' -ForegroundColor Cyan
+Write-Host 'and it drops you straight into the server.' -ForegroundColor Cyan
+Write-Host ''
+Write-Host 'Do NOT pin aos.exe directly - that bypasses the launcher and lands' -ForegroundColor Cyan
+Write-Host 'you on the old starter window.' -ForegroundColor Cyan
+
+if ($haveLauncher) {
+  # Open our launcher so they can set a name before the first match, rather
+  # than joining as "Player".
+  Start-Process powershell -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass',
+    '-WindowStyle','Hidden','-File',(Join-Path $dest 'TrentsHideaway.ps1')
+} else {
+  Start-Hideaway
+}
